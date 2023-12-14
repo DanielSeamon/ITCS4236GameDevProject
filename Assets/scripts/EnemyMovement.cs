@@ -11,41 +11,34 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField] private Transform myTransform;
     [SerializeField] private Transform targetTransform;
 
+    private PathFinding path;
+    private int lengthPath;
+    private int position = 0;
+    float wRadius = 1f;
+
+
     // Start is called before the first frame update
     void Start()
     {
-      moveSpeed = 5f;
-      radiusOfSatisfaction = 1f;
-      targetTransform = GameObject.Find("castle").transform;   
+        moveSpeed = 5f;
+        radiusOfSatisfaction = 0.01f;
+        targetTransform = GameObject.Find("castle").transform;
+        path = new PathFinding();
+        path.FindPath(myTransform.position, targetTransform.position);
+        lengthPath = path.finalPath.Count;
     }
 
     // Update is called once per frame
     void Update()
     {
-        RunKinematicArrive();
-    }
+        if (path.finalPath != null)
+        {
+            if (Vector3.Distance(path.finalPath[position].worldPos, myTransform.position) < wRadius && position < lengthPath - 1)
+            {
+                position++;
+            }
+            myTransform.position = Vector3.MoveTowards(myTransform.position, path.finalPath[position].worldPos, moveSpeed * Time.deltaTime);
 
-    private void RunKinematicArrive(){
-        // Create vector from character to target
-        Vector3 towardsTarget = targetTransform.position - myTransform.position;
-
-        // Check to see if the character is close enough to the target
-        if (towardsTarget.magnitude <= radiusOfSatisfaction) {
-            // Close enough to stop
-            return;
         }
-
-        // Normalize vector so we only use the direction
-        towardsTarget = towardsTarget.normalized;
-
-        // Face the target
-        Quaternion targetRotation = Quaternion.LookRotation (towardsTarget);
-        myTransform.rotation = Quaternion.Lerp (myTransform.rotation, targetRotation, 0.1f);
-
-        // Move along our forward vector (the direction we're facing)
-        Vector3 newPosition = myTransform.position;
-        newPosition += myTransform.forward * moveSpeed * Time.deltaTime;
-
-        myTransform.position = newPosition;
     }
 }

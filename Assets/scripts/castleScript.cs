@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class castleScript : MonoBehaviour
 {
 
-    private int castleHealth;
+    public static int castleHealth;
     // Start is called before the first frame update
     void Start()
     {
@@ -15,15 +16,17 @@ public class castleScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(castleHealth == 0){
-            Debug.Log("Game Over!");
+        if (castleHealth == 0)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         }
     }
 
-    void OnCollisionEnter(Collision collision){
+    void OnCollisionEnter(Collision collision)
+    {
         //Debug.Log(collision.gameObject);
         Destroy(collision.gameObject);
-        castleHealth -= 50;
+        castleHealth -= 10;
 
     }
 }
